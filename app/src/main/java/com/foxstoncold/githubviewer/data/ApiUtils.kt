@@ -2,9 +2,11 @@ package com.foxstoncold.githubviewer.data
 
 import com.foxstoncold.githubviewer.sl
 import com.squareup.moshi.JsonDataException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
 
 enum class TransmitStatus{
@@ -75,4 +77,5 @@ inline fun <T,R>flyCatching(
         .catch {
             sl.s("caught in wrapper's flow", it)
         }
+        .flowOn(Dispatchers.IO)
 }

@@ -16,12 +16,9 @@ val appModule = module {
     single { DataRepository(get()) }
 
     viewModel { ScreenViewModel(get()) }
-//    singleOf(::DataRepository) {bind<DataRepositoryImpl>()}
 }
 
 fun retrofit(): Retrofit = Retrofit.Builder()
-//    .baseUrl(url)
-//    .client(newClient)
-//    .addConverterFactory(ScalarsConverterFactory.create())
+    .baseUrl("https://api.github.com")
     .addConverterFactory(MoshiConverterFactory.create())
     .build()
