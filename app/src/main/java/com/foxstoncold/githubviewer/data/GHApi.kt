@@ -1,5 +1,6 @@
 package com.foxstoncold.githubviewer.data
 
+import com.foxstoncold.githubviewer.screens.SearchItemModel
 import com.foxstoncold.githubviewer.sl
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -16,12 +17,12 @@ class GHApi(private val retrofit: Retrofit) {
 
     fun searchUsers(query: String) = flyCatching(
         { service.searchUsers(query) },
-        { it.items }
+        { SearchItemModel.mapUserList(it.items) }
     )
 
     fun searchRepos(query: String) = flyCatching(
         { service.searchRepos(query) },
-        { it.items }
+        { SearchItemModel.mapRepoList(it.items) }
     )
 
     //endregion
