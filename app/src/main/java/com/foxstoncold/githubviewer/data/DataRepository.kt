@@ -19,10 +19,10 @@ class DataRepository(
 
     init {
         drScope.launch {
-//            api.searchRepos("captain").collect{
-//                sl.f(it.status.msg)
-//                it.data?.let { sl.i(it) }
-//            }
+            api.getExplorerContents("https://api.github.com/repos/Captain1986/CaptainBlackboard").collect{
+                sl.f(it.status.msg)
+                it.data?.let { sl.i(it) }
+            }
         }
     }
 
@@ -30,6 +30,7 @@ class DataRepository(
 
     fun searchUsers(query: String) = api.searchUsers(query)
     fun searchRepos(query: String) = api.searchRepos(query)
+    fun getExplorerContents(repoApiLink: String) = api.getExplorerContents(repoApiLink)
 
     //endregion
 

@@ -113,11 +113,13 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     private suspend fun request(query: String){
         val response1 = dr.searchUsers(query).last()
         if (response1.status != TransmitStatus.READY) {
+            sl.s("${response1.status}: ${response1.status.msg}")
             _transmitStatus.emit(response1.status)
             return
         }
         val response2 = dr.searchRepos(query).last()
         if (response2.status != TransmitStatus.READY) {
+            sl.s("${response2.status}: ${response2.status.msg}")
             _transmitStatus.emit(response2.status)
             return
         }

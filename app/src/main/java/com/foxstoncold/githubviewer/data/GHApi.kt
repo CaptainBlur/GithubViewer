@@ -5,6 +5,7 @@ import com.foxstoncold.githubviewer.sl
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 class GHApi(private val retrofit: Retrofit) {
@@ -25,6 +26,11 @@ class GHApi(private val retrofit: Retrofit) {
         { SearchItemModel.mapRepoList(it.items) }
     )
 
+    fun getExplorerContents(repoLink: String) = flyCatching(
+        { service.contents(repoLink) },
+        { it }
+    )
+
     //endregion
 
 
@@ -40,4 +46,9 @@ interface GHApiService{
     suspend fun searchRepos(
         @Query("q") query: String
     ): Response<SearchResponseWrapper<RepoData>>
+
+    @GET("{url}")
+    suspend fun contents(
+        @Path(value = "url", encoded = true) repoUrl: String
+    ): Response<List<RepoContentItem>>
 }

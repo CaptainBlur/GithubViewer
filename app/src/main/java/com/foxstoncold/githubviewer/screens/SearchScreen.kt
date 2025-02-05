@@ -111,6 +111,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                                         borderColor =
                                             if (it.isFocused) focusedColor else unFocusedColor
                                     },
+                                singleLine = true,
                                 textStyle = LocalTextStyle.current.copy(
                                     color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 18.sp,
