@@ -28,7 +28,7 @@ class DataRepository(
 
     //region search requests
 
-    fun testSearch(): Flow<ResponseData<List<SearchItemModel>>> = api.searchRepos("java")
+    fun testSearch(): Flow<ResponseData<List<SearchItemModel>>> = api.searchUsers("java")
 
     //endregion
 
