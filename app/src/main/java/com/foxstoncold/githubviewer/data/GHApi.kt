@@ -50,5 +50,5 @@ interface GHApiService{
     @GET("{url}")
     suspend fun contents(
         @Path(value = "url", encoded = true) repoUrl: String
-    ): Response<List<RepoContentItem>>
+    ): Response<List<ExplorerContentItem>>
 }

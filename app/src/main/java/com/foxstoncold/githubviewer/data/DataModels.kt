@@ -25,10 +25,12 @@ data class RepoData(
     val url: String
 )
 
-data class RepoContentItem(
+data class ExplorerContentItem(
     val name: String,
     val path: String,
+    val size: Int,
     val type: String,
     val url: String,
-    val html_url: String
+    val html_url: String,
+    var formatedSize: String = ""
 )

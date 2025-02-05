@@ -33,7 +33,7 @@ import com.foxstoncold.githubviewer.data.TransmitStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
+fun SearchScreen(vm: ScreenViewModel) {
     val transmitStatus by vm.transmitStatus.collectAsState()
     val items: List<SearchItemModel> by vm.searchItems.collectAsState(emptyList())
 
@@ -207,7 +207,7 @@ fun SearchScreen(vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
                         Spacer(modifier = Modifier
                             .height(8.dp))
                     if (!item.stub)
-                        GitHubItemCard(item = item, vm, onRepoClick)
+                        GitHubItemCard(item = item, vm)
                     else
                         ItemStub()
                 }
@@ -220,7 +220,7 @@ fun SearchScreen(vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
 }
 
 @Composable
-fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
+fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,7 +231,7 @@ fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel, onRepoClick: (Str
                 interactionSource = remember { MutableInteractionSource() },
                 indication = LocalIndication.current)
             {
-                onRepoClick.invoke(item.name)
+                item.repoUrl?.let { vm.enterExplorerRepo(item.name, it) }
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
