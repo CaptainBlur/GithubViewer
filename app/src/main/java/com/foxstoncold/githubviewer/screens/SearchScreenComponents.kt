@@ -39,6 +39,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -241,6 +243,13 @@ fun UserItemContent(item: SearchItemModel){
 }
 
 @Composable
+fun ItemStub(){
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp))
+}
+
+@Composable
 fun EmptyQueryPlaceholder(modifier: Modifier){
     Column(
         modifier = modifier
@@ -266,7 +275,7 @@ fun EmptyQueryPlaceholder(modifier: Modifier){
             modifier = Modifier.padding(top = 16.dp),
             text = "Поиск",
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             ),
         )
         BasicText(
@@ -275,9 +284,115 @@ fun EmptyQueryPlaceholder(modifier: Modifier){
                 .padding(horizontal = 16.dp),
             text = "Начните вводить поисковый запрос (от 3-х символов), чтобы увидеть его результаты 😊",
             style = MaterialTheme.typography.bodyMedium.copy(
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.secondary
             ),
         )
+    }
+
+}
+
+@Composable
+fun EmptyListPlaceholder(modifier: Modifier){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val context = LocalContext.current
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(GifDecoder.Factory())
+            }
+            .build()
+        Image(
+            modifier = modifier.size(130.dp),
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(data = R.drawable.ufo_gif).build(),
+                imageLoader = imageLoader
+            ),
+            contentDescription = null,
+        )
+        BasicText(
+            modifier = Modifier.padding(top = 16.dp),
+            text = "Тут ничего нет",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+        )
+        BasicText(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 16.dp),
+            text = "Возможно чуть позже здесь что-то появится",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.secondary
+            ),
+        )
+    }
+
+}
+
+@Composable
+fun ErrorPlaceholder(modifier: Modifier, vm: ScreenViewModel){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val context = LocalContext.current
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(GifDecoder.Factory())
+            }
+            .build()
+        Image(
+            modifier = modifier.size(130.dp),
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(data = R.drawable.error_gif).build(),
+                imageLoader = imageLoader
+            ),
+            contentDescription = null,
+        )
+        BasicText(
+            modifier = Modifier.padding(top = 16.dp),
+            text = "Упс...",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+        )
+        BasicText(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 16.dp),
+            text = "Либо у вас слабое интернет-подключение, либо что-то сломалось у нас - тогда мы в курсе и уже работаем над этим",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.secondary
+            ),
+        )
+        Button(modifier = Modifier
+            .padding(top = 22.dp),
+            shape = RoundedCornerShape(4.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onSecondary,
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
+            onClick = {
+                vm.repeatSearchRequest()
+            }) {
+            BasicText(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = "Обновить",
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
     }
 
 }

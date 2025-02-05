@@ -9,17 +9,18 @@ import java.util.Locale
 data class SearchItemModel(
     val type: Int,
     val id: Int,
+    val stub: Boolean = false,
 
     val name: String,
-    val ownerName: String?,
-    val description: String?,
+    val ownerName: String? = null,
+    val description: String? = null,
     val avatarUrl: String,
     val profileUrl: String,
-    val createdDate: String?,
-    val updatedDate: String?,
-    val starCount: Int?,
-    val watcherCount: Int?,
-    val forkCount: Int?,
+    val createdDate: String? = null,
+    val updatedDate: String? = null,
+    val starCount: Int? = null,
+    val watcherCount: Int? = null,
+    val forkCount: Int? = null,
 
     val expanded: Boolean = false
 ) {
@@ -41,15 +42,8 @@ data class SearchItemModel(
                 type = 0,
                 id = user.id,
                 name = user.login,
-                ownerName = null,
-                description = null,
                 avatarUrl = user.avatar_url,
                 profileUrl = user.html_url,
-                createdDate = null,
-                updatedDate = null,
-                starCount = null,
-                watcherCount = null,
-                forkCount = null
             )
         }
 

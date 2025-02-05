@@ -19,6 +19,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     //region private fields
     private val vmScope = CoroutineScope(Dispatchers.Default)
 
+    private var searchQuery = String()
     private val _searchItems: MutableStateFlow<List<SearchItemModel>> = MutableStateFlow(emptyList())
     private val _transmitStatus: MutableStateFlow<TransmitStatus> = MutableStateFlow(TransmitStatus.IDLE)
     private lateinit var debounceJob: Job
@@ -27,7 +28,6 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     init {
         sl.en()
-        getTestRequest()
     }
 
     //region public fields
@@ -51,47 +51,21 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
             return
         }
 
-        suspend fun request(){
-            _transmitStatus.emit(TransmitStatus.LOADING)
-
-            val response1 = dr.searchUsers(query).last()
-            if (response1.status != TransmitStatus.READY) {
-                _transmitStatus.emit(response1.status)
-                return
-            }
-            val response2 = dr.searchRepos(query).last()
-            if (response2.status != TransmitStatus.READY) {
-                _transmitStatus.emit(response2.status)
-                return
-            }
-
-            _searchItems.emit((response1.data!! + response2.data!!).sortedBy { it.name })
-
-            _transmitStatus.emit(TransmitStatus.READY)
-        }
+        searchQuery = query
 
         val delay: Long = 600
         if (!this::debounceJob.isInitialized || debounceJob.isCompleted || debounceJob.isCancelled){
             debounceJob = vmScope.launch {
                 delay(delay)
-                request()
+                request(query)
             }
         }
         else if (debounceJob.isActive){
             debounceJob.cancel()
             debounceJob = vmScope.launch {
                 delay(delay)
-                request()
+                request(query)
             }
-        }
-    }
-
-    fun getTestRequest(){
-        vmScope.launch {
-//            val last = dr.testSearch().last()
-//            sl.f(last.status)
-//
-//            last.data?.let { _searchItems.emit(it)}
         }
     }
 
@@ -102,6 +76,45 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
         list[index] = list[index].copy(expanded = expanded)
         _searchItems.emit(list)
+    }
+
+    fun repeatSearchRequest() {
+        vmScope.launch {
+            request(searchQuery)
+        }
+    }
+
+    //endregion
+
+    //region private fun
+
+    private suspend fun fillStubs(){
+        val list = mutableListOf<SearchItemModel>()
+        for (i in 0..6){
+            list.add(SearchItemModel(type = 0, id = i, stub = true, name = "", avatarUrl = "", profileUrl = ""))
+        }
+
+        _searchItems.emit(list)
+    }
+
+    private suspend fun request(query: String){
+        _transmitStatus.emit(TransmitStatus.LOADING)
+        fillStubs()
+
+        val response1 = dr.searchUsers(query).last()
+        if (response1.status != TransmitStatus.READY) {
+            _transmitStatus.emit(response1.status)
+            return
+        }
+        val response2 = dr.searchRepos(query).last()
+        if (response2.status != TransmitStatus.READY) {
+            _transmitStatus.emit(response2.status)
+            return
+        }
+
+        _searchItems.emit((response1.data!! + response2.data!!).sortedBy { it.name })
+
+        _transmitStatus.emit(TransmitStatus.READY)
     }
 
     //endregion

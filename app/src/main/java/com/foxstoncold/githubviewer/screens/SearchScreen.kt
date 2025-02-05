@@ -30,11 +30,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.foxstoncold.githubviewer.ScreenViewModel
+import com.foxstoncold.githubviewer.data.TransmitStatus
 import com.foxstoncold.githubviewer.sl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(vm: ScreenViewModel) {
+    val transmitStatus by vm.transmitStatus.collectAsState()
     val items: List<SearchItemModel> by vm.searchItems.collectAsState(emptyList())
 
     var isSearchActive by remember { mutableStateOf(false) }
@@ -189,17 +191,24 @@ fun SearchScreen(vm: ScreenViewModel) {
             )
         }
     ){
+        val paddingMod = Modifier.padding(it)
 
-        EmptyQueryPlaceholder(modifier = Modifier.padding(it))
-//        LazyColumn(modifier = Modifier
-//            .padding(it)
-//            .fillMaxSize()
-//            .background(color = MaterialTheme.colorScheme.background)
-//        ){
-//            items(items.size) { index ->
-//                GitHubItemCard(item = items[index], vm)
-//            }
-//        }
+        if (searchText.text.length<3)
+            EmptyQueryPlaceholder(paddingMod)
+        else if (transmitStatus==TransmitStatus.READY && items.isEmpty())
+            EmptyListPlaceholder(paddingMod)
+        else if (transmitStatus==TransmitStatus.READY)
+            LazyColumn(modifier = paddingMod
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+            ){
+                items(items.size) { index ->
+                    GitHubItemCard(item = items[index], vm)
+                }
+            }
+        else if (transmitStatus!=TransmitStatus.LOADING)
+            ErrorPlaceholder(modifier = Modifier.padding(it), vm)
+
     }
 
 }
@@ -211,13 +220,19 @@ fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel) {
             .fillMaxWidth()
             .padding(8.dp)
             .animateContentSize()
-            .clickable(remember { MutableInteractionSource() }, indication = LocalIndication.current){
+            .clickable(
+                enabled = !item.stub,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = LocalIndication.current)
+            {
                 sl.w("card tap")
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
-        if (item.type==1)
+        if (item.stub)
+            ItemStub()
+        else if (item.type==1)
             RepoItemContent(item, vm)
         else
             UserItemContent(item)

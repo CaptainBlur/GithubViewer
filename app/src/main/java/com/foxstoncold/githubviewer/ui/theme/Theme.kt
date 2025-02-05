@@ -23,9 +23,10 @@ fun GitHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         secondary = Color(0xFFB5B6BD),
         background = Color(0xFFF4F5F9),
         surface = Color.White,
-        tertiary = Color(0xFFF4D281),
+        tertiary = Color(0xFFFECC53),
+        onTertiary = Color(0xFFF4D281),
         onPrimary = Color.White,
-        onSecondary = Color.Black,
+        onSecondary = Color(0xFFDFDFE1),
         onBackground = Color.Black,
         onSurface = Color.Black
     )
@@ -35,9 +36,10 @@ fun GitHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         secondary = Color(0xFF8899A6),
         background = Color(0xFF121212),
         surface = Color(0xFF1E1E1E),
-        tertiary = Color(0xFFF4D281),
+        tertiary = Color(0xFFFECC53),
+        onTertiary = Color(0xFFF4D281),
         onPrimary = Color.White,
-        onSecondary = Color.White,
+        onSecondary = Color(0xFFDFDFE1),
         onBackground = Color.White,
         onSurface = Color.White
     )
