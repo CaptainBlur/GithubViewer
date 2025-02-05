@@ -77,6 +77,6 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
 
+    implementation (libs.accompanist.systemuicontroller)
     implementation (libs.coil.compose)
-
 }

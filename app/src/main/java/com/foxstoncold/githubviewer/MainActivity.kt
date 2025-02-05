@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.foxstoncold.githubviewer.screens.SearchScreen
 import com.foxstoncold.githubviewer.ui.theme.GitHubTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -24,6 +25,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             GitHubTheme {
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+
                 SearchScreen(viewModel)
             }
         }
