@@ -7,12 +7,14 @@ data class SearchResponseWrapper<T>(
 )
 
 data class UserData(
+    val id: Int,
     val login: String,
     val avatar_url: String,
     val html_url: String,
 )
 
 data class RepoData(
+    val id: Int,
     val name: String,
     val owner: UserData,
     val description: String?,

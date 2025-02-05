@@ -8,9 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.foxstoncold.githubviewer.ui.theme.GithubViewerTheme
+import com.foxstoncold.githubviewer.screens.SearchScreen
+import com.foxstoncold.githubviewer.ui.theme.GitHubTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -18,19 +22,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel: ScreenViewModel by viewModel()
-        viewModel.toString()
 
         setContent {
-            GithubViewerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+            GitHubTheme {
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
-
-                    Greeting("Android")
-                }
+                SearchScreen(viewModel)
             }
         }
     }
@@ -47,7 +45,5 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    GithubViewerTheme {
-        Greeting("Android")
-    }
+
 }

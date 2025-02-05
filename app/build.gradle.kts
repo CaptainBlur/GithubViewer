@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.foxstoncold.githubviewer"
-        minSdk = 27
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
 
+    implementation (libs.accompanist.systemuicontroller)
     implementation (libs.coil.compose)
-
+    implementation (libs.coil.gif)
 }
