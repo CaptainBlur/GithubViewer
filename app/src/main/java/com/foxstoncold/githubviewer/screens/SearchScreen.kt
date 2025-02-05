@@ -25,26 +25,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.foxstoncold.githubviewer.ScreenViewModel
 import com.foxstoncold.githubviewer.data.TransmitStatus
-import com.foxstoncold.githubviewer.sl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(vm: ScreenViewModel) {
+fun SearchScreen(vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
     val transmitStatus by vm.transmitStatus.collectAsState()
     val items: List<SearchItemModel> by vm.searchItems.collectAsState(emptyList())
 
-    var isSearchActive by remember { mutableStateOf(false) }
+    val searchText by vm.searchQuery.collectAsState()
+    var isSearchActive by remember { mutableStateOf(searchText.text.isNotEmpty()) }
     val backAction = {
         if (isSearchActive)
             isSearchActive = false
     }
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
 
     BackHandler(enabled = isSearchActive, onBack = backAction)
 
@@ -101,8 +99,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                             BasicTextField(
                                 value = searchText,
                                 onValueChange = {
-                                    searchText = it
-                                    vm.makeSearchRequest(it.text)
+                                    vm.makeSearchRequest(it)
                                 },
                                 modifier = Modifier
                                     .padding(horizontal = 6.dp, vertical = 10.dp)
@@ -156,7 +153,6 @@ fun SearchScreen(vm: ScreenViewModel) {
                                         IconButton(modifier = Modifier
                                             .align(Alignment.CenterEnd),
                                             onClick = {
-                                                searchText = TextFieldValue()
                                                 vm.clearList()
                                             }) {
                                             Icon(
@@ -211,7 +207,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                         Spacer(modifier = Modifier
                             .height(8.dp))
                     if (!item.stub)
-                        GitHubItemCard(item = item, vm)
+                        GitHubItemCard(item = item, vm, onRepoClick)
                     else
                         ItemStub()
                 }
@@ -224,18 +220,18 @@ fun SearchScreen(vm: ScreenViewModel) {
 }
 
 @Composable
-fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel) {
+fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel, onRepoClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .animateContentSize()
             .clickable(
-                enabled = !item.stub,
+                enabled = !item.stub && item.type==1,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = LocalIndication.current)
             {
-                sl.w("card tap")
+                onRepoClick.invoke(item.name)
             },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

@@ -1,5 +1,6 @@
 package com.foxstoncold.githubviewer
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import com.foxstoncold.githubviewer.data.DataRepository
 import com.foxstoncold.githubviewer.data.TransmitStatus
@@ -13,13 +14,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     //region private fields
     private val vmScope = CoroutineScope(Dispatchers.Default)
 
-    private var searchQuery = String()
+    private val _searchQuery: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
     private val _searchItems: MutableStateFlow<List<SearchItemModel>> = MutableStateFlow(emptyList())
     private val _transmitStatus: MutableStateFlow<TransmitStatus> = MutableStateFlow(TransmitStatus.IDLE)
     private lateinit var debounceJob: Job
@@ -35,6 +37,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     //region public fields
 
+    val searchQuery: StateFlow<TextFieldValue> = _searchQuery.asStateFlow()
     val searchItems: StateFlow<List<SearchItemModel>> = _searchItems.asStateFlow()
     val transmitStatus: StateFlow<TransmitStatus> = _transmitStatus.asStateFlow()
 
@@ -43,8 +46,13 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     //region public methods
 
-    fun makeSearchRequest(query: String){
-        if (query.length < 3){
+    fun makeSearchRequest(query: TextFieldValue){
+        runBlocking {
+            _searchQuery.emit(query)
+        }
+        val text = query.text
+
+        if (text.length < 3){
             if (this::debounceJob.isInitialized)
                 debounceJob.cancel()
             vmScope.launch {
@@ -54,7 +62,6 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
             return
         }
 
-        searchQuery = query
         vmScope.launch {
             _transmitStatus.emit(TransmitStatus.LOADING)
             fillStubs()
@@ -64,14 +71,14 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
         if (!this::debounceJob.isInitialized || debounceJob.isCompleted || debounceJob.isCancelled){
             debounceJob = vmScope.launch {
                 delay(delay)
-                request(query)
+                request(text)
             }
         }
         else if (debounceJob.isActive){
             debounceJob.cancel()
             debounceJob = vmScope.launch {
                 delay(delay)
-                request(query)
+                request(text)
             }
         }
     }
@@ -87,7 +94,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     fun repeatSearchRequest() {
         vmScope.launch {
-            request(searchQuery)
+            request(_searchQuery.value.text)
         }
     }
 

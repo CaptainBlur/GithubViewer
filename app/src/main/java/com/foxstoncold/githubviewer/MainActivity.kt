@@ -3,16 +3,8 @@ package com.foxstoncold.githubviewer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.foxstoncold.githubviewer.screens.SearchScreen
+import com.foxstoncold.githubviewer.screens.navigation.ScreenNavigation
 import com.foxstoncold.githubviewer.ui.theme.GitHubTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 val systemUiController = rememberSystemUiController()
                 systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
-                SearchScreen(viewModel)
+                ScreenNavigation(viewModel)
             }
         }
     }

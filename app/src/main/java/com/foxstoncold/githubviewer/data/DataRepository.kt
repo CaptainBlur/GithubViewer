@@ -19,7 +19,7 @@ class DataRepository(
 
     init {
         drScope.launch {
-            api.getExplorerContents("https://api.github.com/repos/Captain1986/CaptainBlackboard").collect{
+            api.getExplorerContents("https://api.github.com/repos/Captain1986/CaptainBlackboard/contents").collect{
                 sl.f(it.status.msg)
                 it.data?.let { sl.i(it) }
             }
