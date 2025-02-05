@@ -28,6 +28,9 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
     init {
         sl.en()
+        vmScope.launch {
+//            fillStubs()
+        }
     }
 
     //region public fields
@@ -52,6 +55,10 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
         }
 
         searchQuery = query
+        vmScope.launch {
+            _transmitStatus.emit(TransmitStatus.LOADING)
+            fillStubs()
+        }
 
         val delay: Long = 600
         if (!this::debounceJob.isInitialized || debounceJob.isCompleted || debounceJob.isCancelled){
@@ -84,6 +91,12 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
         }
     }
 
+    fun clearList(){
+        vmScope.launch {
+            _searchItems.emit(emptyList())
+        }
+    }
+
     //endregion
 
     //region private fun
@@ -98,9 +111,6 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     }
 
     private suspend fun request(query: String){
-        _transmitStatus.emit(TransmitStatus.LOADING)
-        fillStubs()
-
         val response1 = dr.searchUsers(query).last()
         if (response1.status != TransmitStatus.READY) {
             _transmitStatus.emit(response1.status)

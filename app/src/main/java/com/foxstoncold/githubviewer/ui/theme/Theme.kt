@@ -28,20 +28,22 @@ fun GitHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         onPrimary = Color.White,
         onSecondary = Color(0xFFDFDFE1),
         onBackground = Color.Black,
-        onSurface = Color.Black
+        onSurface = Color(0xFFF3F4F8),
+        surfaceContainer = Color(0xFFEEEEEE)
     )
 
     val darkColors = darkColorScheme(
         primary = Color(0xFF252525),
         secondary = Color(0xFF8899A6),
-        background = Color(0xFF121212),
-        surface = Color(0xFF1E1E1E),
+        background = Color(0xFF1E1E1E),
+        surface = Color(0xFF2B2C2E),
         tertiary = Color(0xFFFECC53),
         onTertiary = Color(0xFFF4D281),
         onPrimary = Color.White,
         onSecondary = Color(0xFFDFDFE1),
         onBackground = Color.White,
-        onSurface = Color.White
+        onSurface = Color(0xFF414244),
+        surfaceContainer = Color(0xFF2B2C2E)
     )
 
     val colorScheme = if (false) darkColors else lightColors

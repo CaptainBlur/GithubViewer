@@ -43,6 +43,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,8 @@ import coil.request.ImageRequest
 
 @Composable
 fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
+    val uriHandler = LocalUriHandler.current
+
     Column(modifier = Modifier.padding(12.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -71,21 +74,21 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
                     Text(
                         text = " $it⭐ ",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 item.watcherCount?.let {
                     Text(
                         text = " $it👀 ",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 item.forkCount?.let {
                     Text(
                         text = " $it🍴 ",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -95,7 +98,7 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
                 text = "Подробнее",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.clickable {
                     vm.updateExpanded(item.id, !item.expanded)
                 }
@@ -119,7 +122,7 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
                     remember { MutableInteractionSource() },
                     indication = LocalIndication.current
                 ) {
-                    sl.w("user bar tap")
+                    uriHandler.openUri(item.profileUrl)
                 }
             ) {
                 Row(
@@ -158,7 +161,7 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
                     withStyle(
                         style = SpanStyle(
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     ) {
                         append(item.createdDate ?: "N/A")
@@ -174,7 +177,7 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
                     withStyle(
                         style = SpanStyle(
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     ) {
                         append(item.updatedDate ?: "N/A")
@@ -204,13 +207,15 @@ fun RepoItemContent(item: SearchItemModel, vm: ScreenViewModel) {
 
 @Composable
 fun UserItemContent(item: SearchItemModel){
+    val uriHandler = LocalUriHandler.current
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable(
             remember { MutableInteractionSource() },
             indication = LocalIndication.current
         ) {
-            sl.w("user item tap")
+            uriHandler.openUri(item.profileUrl)
         }
     ) {
         Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -245,8 +250,13 @@ fun UserItemContent(item: SearchItemModel){
 @Composable
 fun ItemStub(){
     Box(modifier = Modifier
+        .height(92.dp)
+        .padding(top = 8.dp)
+        .padding(horizontal = 12.dp)
+        .clip(RoundedCornerShape(4.dp))
         .fillMaxWidth()
-        .height(48.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+    )
 }
 
 @Composable
@@ -275,7 +285,8 @@ fun EmptyQueryPlaceholder(modifier: Modifier){
             modifier = Modifier.padding(top = 16.dp),
             text = "Поиск",
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             ),
         )
         BasicText(
@@ -319,7 +330,8 @@ fun EmptyListPlaceholder(modifier: Modifier){
             modifier = Modifier.padding(top = 16.dp),
             text = "Тут ничего нет",
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             ),
         )
         BasicText(
@@ -363,14 +375,16 @@ fun ErrorPlaceholder(modifier: Modifier, vm: ScreenViewModel){
             modifier = Modifier.padding(top = 16.dp),
             text = "Упс...",
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             ),
         )
         BasicText(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .padding(horizontal = 16.dp),
-            text = "Либо у вас слабое интернет-подключение, либо что-то сломалось у нас - тогда мы в курсе и уже работаем над этим",
+            text = "Либо у вас слабое интернет-подключение, либо что-то сломалось у нас - тогда мы в курсе и уже работаем над этим\n" +
+                    "(вполне возможно, что вы превысили лимит на запросы - попробуйте позже или введите другой запрос)",
             style = MaterialTheme.typography.bodyMedium.copy(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium,

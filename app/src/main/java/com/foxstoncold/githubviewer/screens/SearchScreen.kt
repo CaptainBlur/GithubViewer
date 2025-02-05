@@ -112,7 +112,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                                             if (it.isFocused) focusedColor else unFocusedColor
                                     },
                                 textStyle = LocalTextStyle.current.copy(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold
                                 ),
@@ -122,7 +122,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                                         modifier = Modifier
                                             .border(1.dp, borderColor, RoundedCornerShape(4.dp))
                                             .background(
-                                                MaterialTheme.colorScheme.surface,
+                                                MaterialTheme.colorScheme.onSurface,
                                                 RoundedCornerShape(4.dp)
                                             )
                                             .padding(8.dp)
@@ -156,6 +156,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                                             .align(Alignment.CenterEnd),
                                             onClick = {
                                                 searchText = TextFieldValue()
+                                                vm.clearList()
                                             }) {
                                             Icon(
                                                 modifier = Modifier
@@ -197,16 +198,24 @@ fun SearchScreen(vm: ScreenViewModel) {
             EmptyQueryPlaceholder(paddingMod)
         else if (transmitStatus==TransmitStatus.READY && items.isEmpty())
             EmptyListPlaceholder(paddingMod)
-        else if (transmitStatus==TransmitStatus.READY)
+        else if (transmitStatus==TransmitStatus.READY || transmitStatus==TransmitStatus.LOADING)
             LazyColumn(modifier = paddingMod
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background)
             ){
                 items(items.size) { index ->
-                    GitHubItemCard(item = items[index], vm)
+                    val item = items[index]
+
+                    if (index==0)
+                        Spacer(modifier = Modifier
+                            .height(8.dp))
+                    if (!item.stub)
+                        GitHubItemCard(item = item, vm)
+                    else
+                        ItemStub()
                 }
             }
-        else if (transmitStatus!=TransmitStatus.LOADING)
+        else
             ErrorPlaceholder(modifier = Modifier.padding(it), vm)
 
     }
@@ -230,9 +239,7 @@ fun GitHubItemCard(item: SearchItemModel, vm: ScreenViewModel) {
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
-        if (item.stub)
-            ItemStub()
-        else if (item.type==1)
+        if (item.type==1)
             RepoItemContent(item, vm)
         else
             UserItemContent(item)
