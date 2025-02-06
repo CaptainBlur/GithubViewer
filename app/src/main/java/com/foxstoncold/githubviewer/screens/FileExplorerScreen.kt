@@ -34,11 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.foxstoncold.githubviewer.R
 import com.foxstoncold.githubviewer.ScreenViewModel
-import com.foxstoncold.githubviewer.data.ExplorerContentItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FileExplorerScreen(path: String, vm: ScreenViewModel){
+fun FileExplorerScreen(repoName: String, vm: ScreenViewModel){
+    val currentPath by vm.currentPath.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,7 +53,7 @@ fun FileExplorerScreen(path: String, vm: ScreenViewModel){
                     IconButton(
                         modifier = Modifier
                             .padding(horizontal = 0.dp),
-                        onClick = vm::popupFileExplorer
+                        onClick = vm::navigateBack
                     ) {
                         Icon(
                             modifier = Modifier
@@ -64,7 +65,7 @@ fun FileExplorerScreen(path: String, vm: ScreenViewModel){
                 },
                 title={
                     Text(
-                        text = path,
+                        text = if (currentPath.isEmpty()) repoName else "$repoName/$currentPath",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -84,24 +85,24 @@ fun FileExplorerScreen(path: String, vm: ScreenViewModel){
             items(contents.size) { index ->
                 val item = contents[index]
 
+                val fileType = item.type == "file"
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            vm.enterExplorerRepo(item.path, item.url)
-//                            navController.navigate(Screen.FileExplorer.createRoute(repoName, "$currentPath/$item"))
+                        .clickable(enabled = !fileType) {
+                            vm.enterExplorerFolder(item.path, item.formatedContentsLink)
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector =
-                        if (item.type=="file")
+                        if (fileType)
                             ImageVector.vectorResource(R.drawable.outline_insert_drive_file_24)
                         else
                             ImageVector.vectorResource(R.drawable.baseline_folder_24),
                         tint =
-                        if (item.type=="file")
+                        if (fileType)
                             MaterialTheme.colorScheme.onBackground
                         else
                             MaterialTheme.colorScheme.onTertiary,
@@ -114,7 +115,7 @@ fun FileExplorerScreen(path: String, vm: ScreenViewModel){
                         text = item.name,
                         fontWeight = FontWeight.Medium
                     )
-                    if (item.type=="file") {
+                    if (fileType) {
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = item.formatedSize,

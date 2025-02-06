@@ -21,6 +21,10 @@ class DataRepository(
 //                sl.f(it.status.msg)
 //                it.data?.let { sl.i(it) }
 //            }
+//            api.getExplorerContents("https://api.github.com/repos/Captain1986/CaptainBlackboard/contents/D%230002-hack_your_printf").collect{
+//                sl.f("")
+//                it.data?.let { sl.i(it) }
+//            }
         }
     }
 

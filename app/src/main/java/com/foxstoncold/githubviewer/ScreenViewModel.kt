@@ -30,6 +30,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     private lateinit var debounceJob: Job
 
     private lateinit var navController: NavController
+    private val _currentPath: MutableStateFlow<String> = MutableStateFlow(String())
     private val _explorerContents: MutableStateFlow<List<ExplorerContentItem>> = MutableStateFlow(emptyList())
 
     //endregion
@@ -49,6 +50,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     val transmitStatus: StateFlow<TransmitStatus> = _transmitStatus.asStateFlow()
 
     val explorerContents: StateFlow<List<ExplorerContentItem>> = _explorerContents.asStateFlow()
+    val currentPath: StateFlow<String> = _currentPath.asStateFlow()
 
     //endregion
 
@@ -123,18 +125,38 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     }
 
     fun enterExplorerRepo(repoName: String, apiUrl: String){
-        navController.navigate(Screen.FileExplorer.createRoute(repoName))
         vmScope.launch {
             requestContents(apiUrl)
         }
+        val route = Screen.FileExplorer.createRoute(repoName)
+        sl.fr("navigating NC: $route")
+        navController.navigate(route)
     }
 
-    fun enterExplorerFolder(completePath: String){
+    fun enterExplorerFolder(path: String, apiUrl: String){
+        sl.fr("navigating: $path")
+        vmScope.launch {
+            requestContents(apiUrl)
+            _currentPath.emit(path)
+        }
 
     }
 
-    fun popupFileExplorer(){
-        navController.popBackStack()
+    fun navigateBack() {
+        if (_currentPath.value.isNotEmpty()) {
+            val path = _currentPath.value.substringBeforeLast("/", "")
+            sl.fr("back: $path")
+            vmScope.launch {
+                _currentPath.emit(path)
+            }
+        } else {
+            sl.fr("back NC")
+            navController.popBackStack()
+        }
+
+//        val text = "Back Stack: " + navController.currentBackStack.value.joinToString(" -> ") { it.destination.route ?: "Unknown" }
+//        sl.i(text)
+//        navController.popBackStack()
     }
 
     //endregion
@@ -171,6 +193,8 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     }
 
     private suspend fun requestContents(url: String){
+        sl.f("requesting contents: $url")
+
         _transmitStatus.emit(TransmitStatus.LOADING)
 //        fillStubsSearch()
 
@@ -183,7 +207,7 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
         val list = response.data!!
             .sortedBy { it.type }
-            .onEach { it.formatedSize = formatFileSize(it.size) }
+            .onEach { it.formatedSize = formatFileSize(it.size); it.formatedContentsLink = formatContentsLink(it.url) }
         _explorerContents.emit(list)
         _transmitStatus.emit(TransmitStatus.READY)
     }
@@ -198,6 +222,8 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
         }
         return if (size % 1.0 == 0.0) "%.0f %s".format(size, units[unitIndex]) else "%.1f %s".format(size, units[unitIndex])
     }
+
+    private fun formatContentsLink(url: String): String = url.substringBeforeLast("?")
 
     //endregion
 

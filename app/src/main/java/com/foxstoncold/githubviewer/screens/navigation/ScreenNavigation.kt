@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.foxstoncold.githubviewer.ScreenViewModel
 import com.foxstoncold.githubviewer.screens.FileExplorerScreen
 import com.foxstoncold.githubviewer.screens.SearchScreen
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun ScreenNavigation(vm: ScreenViewModel) {
@@ -21,10 +23,8 @@ fun ScreenNavigation(vm: ScreenViewModel) {
         composable(Screen.Search.route) { SearchScreen(vm) }
         composable(Screen.FileExplorer.route) { backStackEntry ->
             //NavHost use this to present us a screen when we request navigation (like above)
-            val path = backStackEntry.arguments?.getString("path") ?: return@composable
-
-//            Text("$repoName\t$path")
-            FileExplorerScreen(path, vm)
+            val repoName = backStackEntry.arguments?.getString("repoName") ?: return@composable
+            FileExplorerScreen(repoName, vm)
         }
     }
 }

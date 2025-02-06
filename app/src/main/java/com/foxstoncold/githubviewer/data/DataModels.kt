@@ -32,5 +32,8 @@ data class ExplorerContentItem(
     val type: String,
     val url: String,
     val html_url: String,
-    var formatedSize: String = ""
+
+    //Assigning these values in VM, because I don't want to create a separate UI-model to map this model
+    var formatedSize: String = "",
+    var formatedContentsLink: String = url
 )
