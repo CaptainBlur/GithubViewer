@@ -46,7 +46,7 @@ fun GitHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         surfaceContainer = Color(0xFF2B2C2E)
     )
 
-    val colorScheme = if (false) darkColors else lightColors
+    val colorScheme = if (darkTheme) darkColors else lightColors
 
     MaterialTheme(
         colorScheme = colorScheme,
