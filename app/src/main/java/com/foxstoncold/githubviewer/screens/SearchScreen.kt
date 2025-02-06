@@ -209,7 +209,7 @@ fun SearchScreen(vm: ScreenViewModel) {
                     if (!item.stub)
                         GitHubItemCard(item = item, vm)
                     else
-                        ItemStub()
+                        SearchItemStub()
                 }
             }
         else

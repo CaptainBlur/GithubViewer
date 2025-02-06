@@ -11,10 +11,6 @@ class DataRepository(
 ) {
     private val drScope = CoroutineScope(Dispatchers.IO)
 
-    fun printTest(){
-        sl.w("test")
-    }
-
     init {
         drScope.launch {
 //            api.getExplorerContents("https://api.github.com/repos/Captain1986/CaptainBlackboard/contents").collect{

@@ -26,14 +26,15 @@ data class RepoData(
 )
 
 data class ExplorerContentItem(
-    val name: String,
-    val path: String,
-    val size: Int,
-    val type: String,
-    val url: String,
-    val html_url: String,
+    val name: String = String(),
+    val path: String = String(),
+    val size: Int = -1,
+    val type: String = String(),
+    val url: String = String(),
+    val html_url: String = String(),
 
     //Assigning these values in VM, because I don't want to create a separate UI-model to map this model
     var formatedSize: String = "",
-    var formatedContentsLink: String = url
+    var formatedContentsLink: String = url,
+    val stub: Boolean
 )

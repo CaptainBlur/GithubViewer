@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.Stack
 
 class ScreenViewModel(private val dr: DataRepository): ViewModel() {
 
@@ -32,15 +33,14 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     private lateinit var navController: NavController
     private val _currentPath: MutableStateFlow<String> = MutableStateFlow(String())
     private val _explorerContents: MutableStateFlow<List<ExplorerContentItem>> = MutableStateFlow(emptyList())
+    //Using this value to request content data when navigating back
+    private val backStackContentUrl = Stack<String>()
+    private var lastContentUrl = String()
 
     //endregion
 
     init {
         sl.en()
-        makeSearchRequest(TextFieldValue("ksp-interstellar"))
-        vmScope.launch {
-//            fillStubs()
-        }
     }
 
     //region public fields
@@ -134,29 +134,28 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     }
 
     fun enterExplorerFolder(path: String, apiUrl: String){
+        backStackContentUrl.push(lastContentUrl)
         sl.fr("navigating: $path")
         vmScope.launch {
-            requestContents(apiUrl)
             _currentPath.emit(path)
+            requestContents(apiUrl)
         }
-
     }
 
     fun navigateBack() {
         if (_currentPath.value.isNotEmpty()) {
             val path = _currentPath.value.substringBeforeLast("/", "")
-            sl.fr("back: $path")
+            sl.fr("back: $backStackContentUrl")
+
             vmScope.launch {
+                requestContents(backStackContentUrl.pop())
                 _currentPath.emit(path)
             }
         } else {
             sl.fr("back NC")
+            backStackContentUrl.empty()
             navController.popBackStack()
         }
-
-//        val text = "Back Stack: " + navController.currentBackStack.value.joinToString(" -> ") { it.destination.route ?: "Unknown" }
-//        sl.i(text)
-//        navController.popBackStack()
     }
 
     //endregion
@@ -172,6 +171,14 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
         }
 
         _searchItems.emit(list)
+    }
+    private suspend fun fillStubsContents(){
+        val list = mutableListOf<ExplorerContentItem>()
+        for (i in 0..9){
+            list.add(ExplorerContentItem(stub = true))
+        }
+
+        _explorerContents.emit(list)
     }
 
     private suspend fun requestSearch(query: String){
@@ -193,10 +200,12 @@ class ScreenViewModel(private val dr: DataRepository): ViewModel() {
     }
 
     private suspend fun requestContents(url: String){
+        if (url.isEmpty()) return
         sl.f("requesting contents: $url")
+        lastContentUrl = url
 
         _transmitStatus.emit(TransmitStatus.LOADING)
-//        fillStubsSearch()
+        fillStubsContents()
 
         val response = dr.getExplorerContents(url).last()
         if (response.status != TransmitStatus.READY) {

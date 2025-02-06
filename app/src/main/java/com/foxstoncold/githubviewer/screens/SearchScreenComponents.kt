@@ -1,6 +1,5 @@
 package com.foxstoncold.githubviewer.screens
 
-import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -34,22 +33,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.foxstoncold.githubviewer.R
 import com.foxstoncold.githubviewer.ScreenViewModel
-import com.foxstoncold.githubviewer.sl
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 
 @Composable
@@ -248,7 +240,7 @@ fun UserItemContent(item: SearchItemModel){
 }
 
 @Composable
-fun ItemStub(){
+fun SearchItemStub(){
     Box(modifier = Modifier
         .height(92.dp)
         .padding(top = 8.dp)
